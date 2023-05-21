@@ -111,8 +111,8 @@ const wrapAsync = (fn) => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next)
 }
 
-const sendResponse = (res, statusCode, status, message) => {
-  res.status(statusCode).json({ status, message })
+const sendResponse = (res, statusCode, status, message, data) => {
+  res.status(statusCode).json({ status, message, data })
 }
 
 const validPhoneNumber = (numbers) => {
@@ -138,7 +138,7 @@ app.post(
         const file_ubah_nama = `${new Date().getTime()}_${
           Object.keys(files)[0]
         }`
-        const fileDikirim = files[Object.keys(files)[0]]
+        const fileDikirim = files.file
         const namafiledikirim = `./uploads/${file_ubah_nama}`
         const fileDikirim_Mime = fileDikirim.mimetype
         await fileDikirim.mv(`./uploads/${file_ubah_nama}`)
@@ -146,7 +146,8 @@ app.post(
       } else {
         await con.gas(msg, number, to, type)
       }
-      sendResponse(res, 200, true, 'success')
+      const data = { msg, number, to, type, files }
+      sendResponse(res, 200, true, 'success', data)
     } else if (!errors.isEmpty()) {
       sendResponse(res, 422, false, errors.mapped())
     } else if (!creeds) {

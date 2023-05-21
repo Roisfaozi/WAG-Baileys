@@ -10,9 +10,9 @@ const { Console } = require('console')
 const path = './core/'
 let x
 
-exports.gas = function (msg, no, to, type, file, mime) {
+exports.gas = async function (msg, no, to, type, file, mime) {
   const numb = no + '.json'
-  connect(numb, msg, to, type, file, mime)
+  await connect(numb, msg, to, type, file, mime)
 }
 
 async function connect(sta, msg, to, type, file, mime) {
@@ -49,20 +49,17 @@ async function connect(sta, msg, to, type, file, mime) {
               text: msg,
             })
           } else {
-            await sock
-              .sendMessage(id, {
-                document: {
-                  url: file,
-                  caption: msg,
-                },
-                mimetype: mime,
-                fileName: file.name,
-              })
-              .then(() => {
-                sock.sendMessage(id, {
-                  text: msg,
-                })
-              })
+            await sock.sendMessage(id, {
+              document: {
+                url: file,
+                caption: msg,
+              },
+              mimetype: mime,
+              fileName: file.name,
+            })
+            await sock.sendMessage(id, {
+              text: msg,
+            })
           }
         }
       }
